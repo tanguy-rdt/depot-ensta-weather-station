@@ -26,7 +26,9 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-  long pressure = bmp.getPressure();
+  float pressure = bmp.getPressure()/100;
+  float tmp = bmp.getTemp()/10;
+
   float temp = sht.getTemp();
   float rh = sht.getRH();
 
@@ -42,8 +44,10 @@ void loop() {
 
   lcd.setCursor(0, 1);
   lcd.print(pressure);
-  lcd.setCursor(7, 1);
-  lcd.print("Pa");
+
+  lcd.setCursor(10, 1);
+  lcd.print(tmp);
+
   
   delay(500);
   lcd.clear();
