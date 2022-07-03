@@ -1,0 +1,79 @@
+@font-face {
+    font-family: DelrosaHoliday;
+    font-weight: normal;
+    font-style: normal;
+    src: url('fonts/DelrosaHoliday.ttf');
+}
+
+@font-face {
+    font-family: Coolvetica;
+    font-weight: normal;
+    font-style: normal;
+    src: url('fonts/coolvetica\ rg.otf');
+}
+
+.title {
+    font-family: DelrosaHoliday;
+    font-size: 30px;
+    padding-top: 5em;
+
+    text-align: center;
+}
+
+.content {
+    padding-top: 2em;
+    font-family: Coolvetica;
+    font-size: 40px;
+}
+
+.typeData {
+    float: left;
+    height: 100%;
+    width: 49%;
+
+    text-align: right;
+}
+
+.data {
+    float: right;
+    height: 100%;
+    width: 49%;
+
+    text-align: left;
+}
+
+.footer-name{
+    float: right;
+    height: 100%;
+    width: 10em;
+
+    text-align: right;
+    font-size: 20px;
+}
+
+.footer-logo-ensta{
+    float: left;
+    height: 100%;
+    width: 20em;
+
+    text-align: left;
+}
+
+
+body {
+    background-image:url('img/background.png');
+    background-repeat: no-repeat;
+    background-size: cover; 
+    background-color: black;
+
+    color: White;
+}
+
+footer{
+    width: 97%;
+    position: absolute;
+    bottom:0;
+    padding-top:10em;
+    padding-bottom: 1em;
+    font-family: Coolvetica;
+}
