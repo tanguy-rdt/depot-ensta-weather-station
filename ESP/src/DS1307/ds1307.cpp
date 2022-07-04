@@ -12,7 +12,7 @@
 #include <Wire.h>
 #include <time.h>
 
-#include "si7034.h"
+#include "ds1307.h"
   
 #define DS1307_ADDR               0xd0
 
@@ -30,49 +30,55 @@ DS1307::DS1307()
 {
 }
 
-void DS1307::setupRealTime(NTCTime *NtcTime){
-    _tm -> _secondes = NtcTime -> secondes;
-    _tm -> _minutes = NtcTime -> minutes;
-    _tm -> _hours = NtcTime -> hours;
-    _tm -> _day = NtcTime -> day;
-    _tm -> _date = NtcTime -> date;
-    _tm -> _month = NtcTime -> month;
-    _tm -> _year = NtcTime -> year;
-}
-
-RealTime DS1307::getRealTime(){
-    return tm;
-}
-
-void SI7034::startMesurement()
+void DS1307::setupRealTime(NTCTime *NtcTime)
 {
-    uint8_t addr[2];
-    addr [0] = CMD1_MES_NH_NMODE;
-    addr [1] = CMD2_MES_NH_NMODE;
+    uint8_t addr[8];
+    addr [0] = SECONDES_ADDR;
+    addr [1] = decToBcd(NtcTime.secondes);
+    addr [2] = decToBcd(NtcTime.minutes);
+    addr [3] = decToBcd(NtcTime.hours);
+    addr [4] = decToBcd(NtcTime.day);
+    addr [5] = decToBcd(NtcTime.date);
+    addr [6] = decToBcd(NtcTime.month);
+    addr [7] = decToBcd(NtcTime.year);
+
     Wire.beginTransmission(SI7034_ADDR);
-    Wire.write(addr, 2);
+    Wire.write(addr, 8);
+    Wire.endTransmission();
+}
+
+_RealTime DS1307::getRealTime()
+{
+    Wire.beginTransmission(SI7034_ADDR);
+    Wire.write(SECONDES_ADDR);
     Wire.endTransmission();
 
     delay(15);
 
-    Wire.requestFrom(SI7034_ADDR, 6);
+    Wire.requestFrom(SI7034_ADDR, 7);
 
     if (6 <= Wire.available())
     {
-        uint8_t _msbTemp = Wire.read();
-        uint8_t _lsbTemp = Wire.read();
-        uint8_t _checksumTemp = Wire.read();
-        uint8_t _msbRH = Wire.read();
-        uint8_t _lsbRH = Wire.read();
-        uint8_t _checksumRH = Wire.read();
+        _tm -> _secondes = bcdToDec(Wire.read() & 0x7f);
+        _tm -> _minutes = bcdToDec(Wire.read());
+        _tm -> _hours = bcdToDec(Wire.read() & 0x3f);
+        _tm -> _day = bcdToDec(Wire.read());
+        _tm -> _date = bcdToDec(Wire.read());
+        _tm -> _month = bcdToDec(Wire.read());
+        _tm -> _year = bcdToDec(Wire.read());
 
-        uint16_t _rawTemp = ((_msbTemp << 8) | (_lsbTemp));
-        uint16_t _rawRH = ((_msbRH << 8) | (_lsbRH));
-
-        setRawTemp(_rawTemp);
-        setRawRH(_rawRH);
+        return _tm;
     }
 
-    setRawTemp(-1);
-    setRawRH(-1);
+    return -1;
+}
+
+uint8_t DS1307::decToBcd(uint8_t dec)
+{
+    return ((dec/10 * 16) + (dec % 10));
+}
+
+uint8_t DS1307::bcdToDec(uint8_t bcd)
+{
+    return ((bcd/16 * 10) + (bcd % 16));
 }

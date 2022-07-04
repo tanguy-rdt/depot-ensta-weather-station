@@ -12,8 +12,6 @@
 #######################################	
 
 begin	KEYWORD2
-getTemp	KEYWORD2
-getRH   KEYWORD2
-SI7034	KEYWORD2
-startMesurement KEYWORD2
-
+setupRealTime	KEYWORD2
+getRealTime   KEYWORD2
+DS1307	KEYWORD2
