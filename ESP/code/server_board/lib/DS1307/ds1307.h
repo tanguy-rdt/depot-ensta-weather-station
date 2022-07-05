@@ -10,27 +10,26 @@
 
 #include <Arduino.h>
 
+struct MyTime {
+    int secondes;
+    int minutes;
+    int hours;
+    int day;
+    int date;
+    int month;
+    int year;
+};       
+
 class DS1307
 {
     public:
         DS1307();
+        ~DS1307();
 
         void begin();
-        void setupRealTime(RTime rtime);
-        void getRealTime();
+        void setupRealTime(struct tm *time);
+        void getRealTime(struct MyTime *myTm);
         
-        struct RTime {
-            int secondes = 0;
-            int minutes = 0;
-            int hours = 0;
-            int day = 10;
-            int date = 5;
-            int month = 0;
-            int year = 0;
-        };
-
-        RTime rtime;
-       
 
     private:
         uint8_t decToBcd(uint8_t dec);

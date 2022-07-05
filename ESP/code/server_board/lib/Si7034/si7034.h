@@ -23,10 +23,12 @@ class SI7034
     private:
         uint16_t getRawTemp();
         uint16_t getRawRH();
-        uint16_t setRawTemp(uint16_t rawTemp);
-        uint16_t setRawRH(uint16_t rawRH);
+        void setRawTemp(uint16_t rawTemp);
+        void setRawRH(uint16_t rawRH);
         float convertRawTemp(uint16_t rawTemp);
         float convertRawRH(uint16_t rawRH);
+
+        uint16_t _rawRH, _rawTemp;
 };
 
 

@@ -64,7 +64,7 @@ void SI7034::setRawRH(uint16_t rawRH)
 
 float SI7034::convertRawTemp(uint16_t rawTemp)
 {
-    return (-45 + 175)((rawTemp)/pow(2, 16));
+    return (-45 + 175) * ((rawTemp)/pow(2, 16));
 }
 
 float SI7034::convertRawRH(uint16_t rawRH)
