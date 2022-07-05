@@ -44,6 +44,7 @@ void setup() {
 }
 
 void loop() {
+  sensor.startMesurement();
   temp = sensor.getTemp();
   rh = sensor.getRH();
   clk.getRealTime(&myTime);

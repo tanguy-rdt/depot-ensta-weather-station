@@ -1,5 +1,12 @@
-// Header File
 
+/********************************************************
+*                                                       *
+*    PROJECT: SHT21 library for weather station         *
+*    ORGANIZATION: ENSTA Bretagne FIPASE 2024           *
+*    AUTEUR: Tanguy ROUDAUT, Tom ALLAIN                 *
+*    DATE: 29/06/2022                                   *
+*                                                       *
+*********************************************************/
 
 class SHT21
 {

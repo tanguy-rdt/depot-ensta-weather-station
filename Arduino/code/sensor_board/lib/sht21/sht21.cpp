@@ -14,10 +14,7 @@
 
 #include "sht21.h"
 
-#define SHT21_ADDR                 0x40 // utiliser cette addr sur proteus et peut-être la carte aussi
-
-#define SHT21_ADDR_W               0x80 // addr de la datasheet mais ne fonctionne pas sur proteus, a voir sur carte
-#define SHT21_ADDR_R               0x81 // addr de ...
+#define SHT21_ADDR                 0x40 
 
 #define TEMP_CMD_NO_HOLD_ADDR      0xf3
 #define RH_CMD_NO_HOLD_ADDR        0xf5
