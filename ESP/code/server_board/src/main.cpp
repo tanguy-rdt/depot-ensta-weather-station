@@ -1,3 +1,13 @@
+/********************************************************
+*                                                       *
+*    PROJECT: main for weather station server board     *
+*    ORGANIZATION: ENSTA Bretagne FIPASE 2024           *
+*    AUTEUR: Tanguy ROUDAUT, Tom ALLAIN                 *
+*    DATE: 29/06/2022                                   *
+*                                                       *
+*********************************************************/
+
+
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 #include <Wire.h>
