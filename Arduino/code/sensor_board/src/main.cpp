@@ -1,5 +1,7 @@
+#include <Arduino.h>
 #include <LiquidCrystal.h>
 #include <Wire.h>
+
 #include <sht21.h>
 #include <bmp180.h>
 
