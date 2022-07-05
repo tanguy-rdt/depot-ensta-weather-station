@@ -1,25 +1,35 @@
 #include <LiquidCrystal.h>
 #include <Wire.h>
-//#include <ds1307.h>
+#include <WiFi.h>
+
+#include <DS1307/ds1307.h>
 #include <si7034.h>
 
-const int rs = 2, en = 3, d4 = 4, d5 = 5, d6 = 6, d7 = 7;
+const int rs = 2, en = 3, d4 = 4, d5 = 5, d6 = 6, d7 = 7; // mettre les bonnes regarder schéma proteus
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
-//DS1307 ds;
+const char* ssid = "AjouterSSID";
+const char* password =  "AjouterMotDePasse";
+
+const char* ntpServer = "time.google.com";
+
+DS1307 ds;
 SI7034 si;
 
 void setup() {
   lcd.begin(16, 2);
-  //ds.begin();
+  ds.begin();
   si.begin();
+  WiFi.begin(ssid, password);
   Serial.begin(9600);
 
-  lcd.print("start");
-  delay(2000);
-  lcd.clear();
+  Serial.println("Connected with success");
+  configTime(0, 3600, ntpServer);
 
-  Serial.print("hello");
+  if(!getLocalTime(ds.rtime)){
+    Serial.println("Unable to get real time, then setup the clock");
+    return;
+  }
 
 }
 
