@@ -17,9 +17,9 @@
 #include <si7034.h>
 
 
-const char* ssid = "AjouterSSID"; // MODIFER !!
-const char* password =  "AjouterMotDePasse"; // MODIFIER !!
-const char* ntpServer = "time.google.com";
+const char* ssid = "Livebox-3700"; // MODIFER !!
+const char* password =  "AkqDmWVXX6vL2AxNxg"; // MODIFIER !!
+const char* ntpServer = "chronos.univ-brest.fr";
 
 const int rs = 15, en = 2, d4 = 0, d5 = 4, d6 = 16, d7 = 17; 
 
@@ -37,7 +37,7 @@ void displayTemp(float temp);
 void displayRH(float rh);
 
 void setup() {
-  lcd.begin(16, 2);
+  lcd.begin(20, 4);
   clk.begin();
   sensor.begin();
   WiFi.begin(ssid, password);
@@ -94,15 +94,15 @@ void displayTimeDate(struct MyTime *time){
 }
 
 void displayTemp(float temp){
-  lcd.setCursor(10, 0);
+  lcd.setCursor(0, 2);
   lcd.print(temp);
-  lcd.setCursor(15, 0);
+  lcd.setCursor(5, 2);
   lcd.print("C");
 }
 
 void displayRH(float rh){
-  lcd.setCursor(10, 0);
+  lcd.setCursor(0, 3);
   lcd.print(rh);
-  lcd.setCursor(15, 0);
+  lcd.setCursor(5, 3);
   lcd.print("%");
 }

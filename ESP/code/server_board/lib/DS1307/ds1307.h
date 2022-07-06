@@ -34,4 +34,5 @@ class DS1307
     private:
         uint8_t decToBcd(uint8_t dec);
         uint8_t bcdToDec(uint8_t bcd);
+        int actualYear(int yearsFrom1900);
 };

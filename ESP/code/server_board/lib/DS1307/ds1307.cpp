@@ -14,9 +14,9 @@
 
 #include "ds1307.h"
   
-#define DS1307_ADDR               0x68
-
-#define NVRAM_ADDR                0x00
+#define DS1307_ADDR        0x68
+#define NVRAM_ADDR         0x00
+#define HOUR_DEC           1
 
 
 DS1307::DS1307()
@@ -37,7 +37,7 @@ void DS1307::begin(){
  {
      uint8_t addr[8];
      addr [0] = NVRAM_ADDR;
-     addr [1] = decToBcd((time -> tm_sec) | 0x80);
+     addr [1] = decToBcd((time -> tm_sec));
      addr [2] = decToBcd(time -> tm_min);
      addr [3] = decToBcd(time -> tm_hour);
      addr [4] = decToBcd(time -> tm_mday);
@@ -62,18 +62,22 @@ void DS1307::getRealTime(struct MyTime *myTm)
 
      if (7 <= Wire.available())
      {
-         myTm -> secondes = bcdToDec(Wire.read());
+         myTm -> secondes = bcdToDec(Wire.read() & 0x7f);
          myTm -> minutes = bcdToDec(Wire.read());
-         myTm -> hours = bcdToDec(Wire.read() & 0x3f);
+         myTm -> hours = bcdToDec(Wire.read() & 0x3f) + HOUR_DEC;
          myTm -> day = bcdToDec(Wire.read());
          myTm -> date = bcdToDec(Wire.read());
          myTm -> month = bcdToDec(Wire.read());
-         myTm -> year = bcdToDec(Wire.read());
+         myTm -> year = actualYear(bcdToDec(Wire.read()));
 
          if (((myTm -> secondes) & 0x80) >> 7){
             Serial.print("DS1307 disable !");
          }
      }
+ }
+
+ int DS1307::actualYear(int yearsFrom1900){
+    return 1900 + yearsFrom1900;
  }
 
  uint8_t DS1307::decToBcd(uint8_t dec)
