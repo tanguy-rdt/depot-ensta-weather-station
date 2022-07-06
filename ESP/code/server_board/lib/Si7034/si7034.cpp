@@ -22,6 +22,7 @@
 #define CMD1_MES_NH_FMODE         0x60
 #define CMD2_MES_NH_FMODE         0x9c
 
+
 SI7034::SI7034()
 {
 }
@@ -34,7 +35,7 @@ void SI7034::begin()
 
 float SI7034::getTemp()
 {
-    return convertRawTemp(getRawTemp());
+    return convertRawRH(getRawTemp());
 }
 
 float SI7034::getRH()
@@ -53,7 +54,7 @@ uint16_t SI7034::getRawRH()
 }
 
 void SI7034::setRawTemp(uint16_t rawTemp)
-{
+{   
     _rawTemp = rawTemp;
 }
 
@@ -64,7 +65,7 @@ void SI7034::setRawRH(uint16_t rawRH)
 
 float SI7034::convertRawTemp(uint16_t rawTemp)
 {
-    return (-45 + 175) * ((rawTemp)/pow(2, 16));
+    return -45 + 175 * ((rawTemp)/pow(2, 16));
 }
 
 float SI7034::convertRawRH(uint16_t rawRH)
@@ -81,7 +82,7 @@ void SI7034::startMesurement()
     Wire.write(addr, 2);
     Wire.endTransmission();
 
-    delay(15);
+    delay(100);
 
     Wire.requestFrom(SI7034_ADDR, 6);
 
@@ -94,11 +95,13 @@ void SI7034::startMesurement()
         uint8_t _lsbRH = Wire.read();
         uint8_t _checksumRH = Wire.read();
 
-        uint16_t _rawTemp = ((_msbTemp << 8) | (_lsbTemp));
-        uint16_t _rawRH = ((_msbRH << 8) | (_lsbRH));
+        uint16_t _rawT = ((_msbTemp << 8) | (_lsbTemp));
+        uint16_t _rawR = ((_msbRH << 8) | (_lsbRH));
 
-        setRawTemp(_rawTemp);
-        setRawRH(_rawRH);
+        setRawTemp(_rawT);
+        setRawRH(_rawR);
+
+        return;
     }
 
     setRawTemp(-1);
