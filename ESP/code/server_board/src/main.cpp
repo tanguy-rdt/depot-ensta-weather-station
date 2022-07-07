@@ -15,11 +15,13 @@
 
 #include <ds1307.h>
 #include <si7034.h>
+#include <webui.h>
+#include <index.h>
 
 
 const char* ssid = "Livebox-3700"; // MODIFER !!
 const char* password =  "AkqDmWVXX6vL2AxNxg"; // MODIFIER !!
-const char* ntpServer = "chronos.univ-brest.fr";
+const char* ntpServer = "ntp.midway.ovh";
 
 const int rs = 15, en = 2, d4 = 0, d5 = 4, d6 = 16, d7 = 17; 
 
@@ -27,9 +29,11 @@ const int rs = 15, en = 2, d4 = 0, d5 = 4, d6 = 16, d7 = 17;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 DS1307 clk;
 SI7034 sensor;
+WEBUI webUI;
 
 
-float temp = 0, rh = 0;
+float inTemperature = 0, inHumidity = 0, outTemperature = 10, outHumidity = 90;
+long outPressure = 1012;
 struct MyTime myTime;
 
 void displayTimeDate(struct MyTime *time);
@@ -40,10 +44,21 @@ void setup() {
   lcd.begin(20, 4);
   clk.begin();
   sensor.begin();
-  WiFi.begin(ssid, password);
   Serial.begin(9600);
 
-  Serial.println("Connected with success");
+  WiFi.mode(WIFI_STA); 
+  WiFi.begin(ssid, password);
+  while(WiFi.waitForConnectResult() != WL_CONNECTED){      
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());  
+
+  webUI.begin();
+
   configTime(0, 3600, ntpServer);
 
   struct tm rtm;
@@ -55,13 +70,16 @@ void setup() {
 
 void loop() {
   sensor.startMesurement();
-  temp = sensor.getTemp();
-  rh = sensor.getRH();
+  inTemperature = sensor.getTemp();
+  inHumidity = sensor.getRH();
   clk.getRealTime(&myTime);
 
   displayTimeDate(&myTime);
-  displayTemp(temp);
-  displayRH(rh);
+  displayTemp(inTemperature);
+  displayRH(inHumidity);
+
+  webUI.setValue(&inTemperature, &inHumidity, &outTemperature, &outHumidity, &outPressure, &myTime);
+  webUI.displayValue();
 
   delay(1000);
   lcd.clear();
@@ -106,3 +124,4 @@ void displayRH(float rh){
   lcd.setCursor(5, 3);
   lcd.print("%");
 }
+
