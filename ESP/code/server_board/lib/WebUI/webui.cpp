@@ -32,7 +32,7 @@ void handleMin();
 void handleSec();
 
 float *inTemp, *inRh, *outTemp, *outRh;
-int *day, *month, *year, *hours, *mins, *secs;
+int *date, *month, *year, *hours, *mins, *secs;
 long  *outPress;
 
 WEBUI::WEBUI()
@@ -63,7 +63,7 @@ void WEBUI::setValue(float *inT, float *inH, float *outT, float *outH, long *pre
     outTemp = outT;
     outRh = outH;
     outPress = pressure;
-    day = &(myTm -> day);
+    date = &(myTm -> date);
     month = &(myTm -> month);
     year = &(myTm -> year);
     hours = &(myTm -> hours);
@@ -107,7 +107,7 @@ void handlePress(){
 }
 
 void handleDay(){
-    String Value = String(*day);
+    String Value = String(*date);
     server.send(200, "text/plane", Value); 
 }
 

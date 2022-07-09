@@ -16,11 +16,8 @@
   
 #define SI7034_ADDR               0x70
 
-#define CMD1_MES_NH_NMODE         0x78
-#define CMD2_MES_NH_NMODE         0x66
-
-#define CMD1_MES_NH_FMODE         0x60
-#define CMD2_MES_NH_FMODE         0x9c
+#define TEMP_MES_NH_NMODE         0x78
+#define RH_MES_NH_NMODE           0x66
 
 
 SI7034::SI7034()
@@ -35,32 +32,59 @@ void SI7034::begin()
 
 float SI7034::getTemp()
 {
-    return convertRawRH(getRawTemp());
+    uint16_t rawTemp = readRawTemp();
+    float temp = convertRawTemp(rawTemp);
+
+    return temp;
 }
 
 float SI7034::getRH()
 {
-    return convertRawRH(getRawRH());
+    uint16_t rawRh = readRawRh();
+    float rh = convertRawTemp(rawRh);
+
+    return rh;
 }
 
-uint16_t SI7034::getRawTemp()
-{
-    return _rawTemp;
+uint16_t SI7034::readRawTemp(){
+    Wire.beginTransmission(SI7034_ADDR);
+    Wire.write(TEMP_MES_NH_NMODE);
+    Wire.endTransmission();
+
+    delay(70);
+
+    Wire.requestFrom(SI7034_ADDR, 2);
+
+    if (2 <= Wire.available())
+    {
+        uint8_t _msb = Wire.read();
+        uint8_t _lsb = Wire.read();
+
+        return ((_msb << 8) | (_lsb));
+    }
+
+    return -1;
 }
 
-uint16_t SI7034::getRawRH()
-{
-    return _rawRH;
-}
 
-void SI7034::setRawTemp(uint16_t rawTemp)
-{   
-    _rawTemp = rawTemp;
-}
+uint16_t SI7034::readRawRh(){
+    Wire.beginTransmission(SI7034_ADDR);
+    Wire.write(RH_MES_NH_NMODE);
+    Wire.endTransmission();
 
-void SI7034::setRawRH(uint16_t rawRH)
-{
-    _rawRH = rawRH;
+    delay(70);
+
+    Wire.requestFrom(SI7034_ADDR, 2);
+
+    if (2 <= Wire.available())
+    {
+        uint8_t _msb = Wire.read();
+        uint8_t _lsb = Wire.read();
+
+        return ((_msb << 8) | (_lsb));
+    }
+
+    return -1;
 }
 
 float SI7034::convertRawTemp(uint16_t rawTemp)
@@ -71,39 +95,4 @@ float SI7034::convertRawTemp(uint16_t rawTemp)
 float SI7034::convertRawRH(uint16_t rawRH)
 {
     return 100 * ((rawRH)/pow(2, 16));
-}
-
-void SI7034::startMesurement()
-{
-    uint8_t addr[2];
-    addr [0] = CMD1_MES_NH_NMODE;
-    addr [1] = CMD2_MES_NH_NMODE;
-    Wire.beginTransmission(SI7034_ADDR);
-    Wire.write(addr, 2);
-    Wire.endTransmission();
-
-    delay(100);
-
-    Wire.requestFrom(SI7034_ADDR, 6);
-
-    if (6 <= Wire.available())
-    {
-        uint8_t _msbTemp = Wire.read();
-        uint8_t _lsbTemp = Wire.read();
-        uint8_t _checksumTemp = Wire.read();
-        uint8_t _msbRH = Wire.read();
-        uint8_t _lsbRH = Wire.read();
-        uint8_t _checksumRH = Wire.read();
-
-        uint16_t _rawT = ((_msbTemp << 8) | (_lsbTemp));
-        uint16_t _rawR = ((_msbRH << 8) | (_lsbRH));
-
-        setRawTemp(_rawT);
-        setRawRH(_rawR);
-
-        return;
-    }
-
-    setRawTemp(-1);
-    setRawRH(-1);
 }

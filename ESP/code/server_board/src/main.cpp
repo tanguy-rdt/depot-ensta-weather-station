@@ -21,7 +21,7 @@
 
 const char* ssid = "Livebox-3700"; // MODIFER !!
 const char* password =  "AkqDmWVXX6vL2AxNxg"; // MODIFIER !!
-const char* ntpServer = "ntp.midway.ovh";
+const char* ntpServer = "time.google.com";
 
 const int rs = 15, en = 2, d4 = 0, d5 = 4, d6 = 16, d7 = 17; 
 
@@ -65,16 +65,19 @@ void setup() {
 
   if(getLocalTime(&rtm)){
     clk.setupRealTime(&rtm);
+    Serial.println(rtm.tm_hour);
+
   }
 }
 
 void loop() {
-  sensor.startMesurement();
   inTemperature = sensor.getTemp();
   inHumidity = sensor.getRH();
   clk.getRealTime(&myTime);
 
-  displayTimeDate(&myTime);
+  displayTimeDate(&myTime);    
+  Serial.println(myTime.day);
+
   displayTemp(inTemperature);
   displayRH(inHumidity);
 
@@ -100,7 +103,7 @@ void displayTimeDate(struct MyTime *time){
   lcd.print("s");
 
   lcd.setCursor(0, 1);
-  lcd.print(time -> day);
+  lcd.print(time -> date);
   lcd.setCursor(2, 1);
   lcd.print("/");
   lcd.setCursor(3, 1);

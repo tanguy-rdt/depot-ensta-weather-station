@@ -127,7 +127,7 @@ const char MAIN_page[] PROGMEM = R"=====(
                 getHour();
                 getMin();
                 getSec();
-            }, 1); //2000mSeconds update rate
+            }, 1000); //2000mSeconds update rate
 
             function getIndoorTemp() {
                 var xhttp = new XMLHttpRequest();

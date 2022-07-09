@@ -37,11 +37,11 @@ void DS1307::begin(){
  {
      uint8_t addr[8];
      addr [0] = NVRAM_ADDR;
-     addr [1] = decToBcd((time -> tm_sec));
+     addr [1] = decToBcd(time -> tm_sec);
      addr [2] = decToBcd(time -> tm_min);
      addr [3] = decToBcd(time -> tm_hour);
-     addr [4] = decToBcd(time -> tm_mday);
-     addr [5] = decToBcd(time -> tm_wday);
+     addr [4] = decToBcd(time -> tm_wday);
+     addr [5] = decToBcd(time -> tm_mday);
      addr [6] = decToBcd(time -> tm_mon);
      addr [7] = decToBcd(time -> tm_year);
 

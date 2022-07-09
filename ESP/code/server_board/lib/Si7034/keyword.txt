@@ -15,5 +15,4 @@ begin	KEYWORD2
 getTemp	KEYWORD2
 getRH   KEYWORD2
 SI7034	KEYWORD2
-startMesurement KEYWORD2
 

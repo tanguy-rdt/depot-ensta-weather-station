@@ -15,6 +15,8 @@
 #include <sht21.h>
 #include <bmp180.h>
 
+#define POWER_LEVEL 1
+
 
 const int rs = 2, en = 3, d4 = 4, d5 = 5, d6 = 6, d7 = 7;
 
@@ -30,6 +32,7 @@ float pressure, tmp, temp, rh;
 void displayTemp(float temp);
 void displayRh(float rh);
 void displayPressure(float press);
+float getPowerLevel();
 
 
 void setup() {
@@ -80,4 +83,11 @@ void displayPressure(float press){
   lcd.setCursor(5, 1);
   lcd.print("hPa");
 }
+
+float getPowerLevel()
+{
+  return (3.3 * analogRead(POWER_LEVEL)) / 1023;
+}
+
+
 
