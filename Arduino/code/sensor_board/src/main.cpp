@@ -11,12 +11,13 @@
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 #include <Wire.h>
+#include <LoRa.h>
 
 #include <sht21.h>
 #include <bmp180.h>
 
 #define POWER_LEVEL 1
-
+#define LORA_FREQUENCY 868000000
 
 const int rs = 2, en = 3, d4 = 4, d5 = 5, d6 = 6, d7 = 7;
 
@@ -32,6 +33,7 @@ float pressure, tmp, temp, rh;
 void displayTemp(float temp);
 void displayRh(float rh);
 void displayPressure(float press);
+void loraSendData(float temp, float rh, float press);
 float getPowerLevel();
 
 
@@ -40,6 +42,13 @@ void setup() {
   bmp.begin();
   sht.begin();
   Serial.begin(9600);
+
+
+  if (!LoRa.begin(LORA_FREQUENCY)) {
+    Serial.println("Starting LoRa failed!");
+    while (1);
+  }
+
 }
 
 void loop() {
@@ -53,6 +62,8 @@ void loop() {
   displayTemp(temp);
   displayRh(rh);
   displayPressure(pressure);
+
+  loraSendData(temp, rh, pressure);
 
   // normalement on doit pas l'afficher mais comme la pression du bmp marche pas ça me permet de debuger 
   // (la pression depend de la temp du bmp)
@@ -89,5 +100,13 @@ float getPowerLevel()
   return (3.3 * analogRead(POWER_LEVEL)) / 1023;
 }
 
+void loraSendData(float temp, float rh, float press)
+{
+  LoRa.beginPacket();
+  LoRa.print(temp);
+  LoRa.print(rh);
+  LoRa.print(press);
+  LoRa.endPacket();
+}
 
 
