@@ -33,7 +33,7 @@ float pressure, tmp, temp, rh;
 void displayTemp(float temp);
 void displayRh(float rh);
 void displayPressure(float press);
-void loraSendData(float temp, float rh, float press);
+void loraSendData(float temp, float rh, long press);
 float getPowerLevel();
 
 
@@ -100,7 +100,7 @@ float getPowerLevel()
   return (3.3 * analogRead(POWER_LEVEL)) / 1023;
 }
 
-void loraSendData(float temp, float rh, float press)
+void loraSendData(float temp, float rh, long press)
 {
   LoRa.beginPacket();
   LoRa.print(temp);

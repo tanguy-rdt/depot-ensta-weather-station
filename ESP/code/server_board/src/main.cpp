@@ -12,11 +12,15 @@
 #include <LiquidCrystal.h>
 #include <Wire.h>
 #include <WiFi.h>
+#include <LoRa.h>
+
 
 #include <ds1307.h>
 #include <si7034.h>
 #include <webui.h>
 #include <index.h>
+
+#define LORA_FREQUENCY 868000000
 
 
 const char* ssid = "Livebox-3700"; // MODIFER !!
@@ -39,12 +43,15 @@ struct MyTime myTime;
 void displayTimeDate(struct MyTime *time);
 void displayTemp(float temp);
 void displayRH(float rh);
+void loraGetData();
+
 
 void setup() {
   lcd.begin(20, 4);
   clk.begin();
   sensor.begin();
   Serial.begin(9600);
+
 
   WiFi.mode(WIFI_STA); 
   WiFi.begin(ssid, password);
@@ -60,6 +67,12 @@ void setup() {
   webUI.begin();
 
   configTime(0, 3600, ntpServer);
+
+
+  if (!LoRa.begin(LORA_FREQUENCY)) {
+    Serial.println("Starting LoRa failed!");
+    while (1);
+  }
 
   struct tm rtm;
 
@@ -80,6 +93,8 @@ void loop() {
 
   displayTemp(inTemperature);
   displayRH(inHumidity);
+
+  loraGetData();
 
   webUI.setValue(&inTemperature, &inHumidity, &outTemperature, &outHumidity, &outPressure, &myTime);
   webUI.displayValue();
@@ -126,5 +141,16 @@ void displayRH(float rh){
   lcd.print(rh);
   lcd.setCursor(5, 3);
   lcd.print("%");
+}
+
+void loraGetData(){
+  int packetSize = LoRa.parsePacket();
+  if (packetSize) {
+    while (LoRa.available()) {
+      outTemperature = LoRa.read();
+      outHumidity = LoRa.read();
+      outPressure = LoRa.read();
+    }
+  }
 }
 
