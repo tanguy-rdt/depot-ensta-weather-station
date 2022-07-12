@@ -3,21 +3,24 @@
 *    PROJECT: WebUI for weather station                 *
 *    ORGANIZATION: ENSTA Bretagne FIPASE 2024           *
 *    AUTEUR: Tanguy ROUDAUT, Tom ALLAIN                 *
-*    DATE: 29/06/2022                                   *
+*    DATE: 12/07/2022                                   *
 *                                                       *
 *********************************************************/
 
-
+// Librairies de base à arduino
 #include <Arduino.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
 
+// Déclaration du .h de la librairie et des lib perso utilisé dans le webui.cpp
 #include "ds1307.h"
 #include "webui.h"
-#include "index.h"  
+#include "index.h"  // site html
 
+// Déclaration de l'objet de la classe WebServer inclus à WebServer.h
 WebServer server(80);
 
+// Déclaration des fonctions
 void handleRoot();
 void handleInTemp();
 void handleInRh();
@@ -31,18 +34,24 @@ void handleHour();
 void handleMin();
 void handleSec();
 
+// Déclaration des fonction globals
 float *inTemp, *inRh, *outTemp, *outRh;
 int *date, *month, *year, *hours, *mins, *secs;
 long  *outPress;
 
-WEBUI::WEBUI()
+WEBUI::WEBUI() // Constructeur
 {
 }
 
-void WEBUI::begin(){
-    server.on("/", handleRoot);   
-    server.on("/readIndoorTemp", handleInTemp);
-    server.on("/readIndoorRh", handleInRh);
+WEBUI::~WEBUI() // Destructeur
+{
+}
+
+void WEBUI::begin() // initialisation 
+{
+    server.on("/", handleRoot); // evenement pour charger la page html
+    server.on("/readIndoorTemp", handleInTemp); // evenement pour charger la temp intérieur
+    server.on("/readIndoorRh", handleInRh); // evenement pour charger l'humidité interieur
     server.on("/readOutdoorTemp", handleOuTemp);
     server.on("/readOutdoorRh", handleOuRh);
     server.on("/readPress", handlePress);
@@ -54,10 +63,12 @@ void WEBUI::begin(){
     server.on("/readMin", handleMin);
     server.on("/readSec", handleSec);
 
-    server.begin();
+    server.begin(); // Démarrage du serveur
 }
 
-void WEBUI::setValue(float *inT, float *inH, float *outT, float *outH, long *pressure, struct MyTime *myTm){
+// Fonction permettant de configurer les valeurs à afficher sur l'interface graphique
+void WEBUI::setValue(float *inT, float *inH, float *outT, float *outH, long *pressure, struct MyTime *myTm) 
+{
     inTemp = inT;
     inRh = inH;
     outTemp = outT;
@@ -71,67 +82,84 @@ void WEBUI::setValue(float *inT, float *inH, float *outT, float *outH, long *pre
     secs= &(myTm -> secondes);
 } 
 
-void WEBUI::displayValue(){
+// Fonction pour afficher les valeurs
+void WEBUI::displayValue()
+{
     server.handleClient();
     delay(1);
 }
 
-void handleRoot() {
-    String s = MAIN_page; 
-    server.send(200, "text/html", s); 
+// Permet de charger la page html
+void handleRoot() 
+{
+    String s = MAIN_page; // récupère la page html sous forme de string qui est dans index.h
+    server.send(200, "text/html", s); // envoie une requette d'écriture au serveur web
 }
 
-void handleInTemp(){
-    String Value = String(*inTemp);
-    server.send(200, "text/plane", Value); 
+// Permet de charger la température intérieur
+void handleInTemp()
+{
+    String Value = String(*inTemp); // récupère sous forme de string la temp
+    server.send(200, "text/plane", Value); // envoie une requette d'écriture au serveur web
 }
 
-void handleInRh(){
+// Permet de charger l'humidité interieur
+void handleInRh()
+{
     String Value = String(*inRh);
     server.send(200, "text/plane", Value); 
 }
 
-void handleOuTemp(){
+void handleOuTemp()
+{
     String Value = String(*outTemp);
     server.send(200, "text/plane", Value); 
 }
 
-void handleOuRh(){
+void handleOuRh()
+{
     String Value = String(*outRh);
     server.send(200, "text/plane", Value); 
 }
 
-void handlePress(){
+void handlePress()
+{
     String Value = String(*outPress);
     server.send(200, "text/plane", Value); 
 }
 
-void handleDay(){
+void handleDay()
+{
     String Value = String(*date);
     server.send(200, "text/plane", Value); 
 }
 
-void handleMonth(){
+void handleMonth()
+{
     String Value = String(*month);
     server.send(200, "text/plane", Value); 
 }
 
-void handleYear(){
+void handleYear()
+{
     String Value = String(*year);
     server.send(200, "text/plane", Value); 
 }
 
-void handleHour(){
+void handleHour()
+{
     String Value = String(*hours);
     server.send(200, "text/plane", Value); 
 }
 
-void handleMin(){
+void handleMin()
+{
     String Value = String(*mins);
     server.send(200, "text/plane", Value); 
 }
 
-void handleSec(){
+void handleSec()
+{
     String Value = String(*secs);
     server.send(200, "text/plane", Value); 
 }

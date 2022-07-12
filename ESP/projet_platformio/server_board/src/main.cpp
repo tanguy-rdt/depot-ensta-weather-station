@@ -3,11 +3,12 @@
 *    PROJECT: main for weather station server board     *
 *    ORGANIZATION: ENSTA Bretagne FIPASE 2024           *
 *    AUTEUR: Tanguy ROUDAUT, Tom ALLAIN                 *
-*    DATE: 29/06/2022                                   *
+*    DATE: 12/07/2022                                   *
 *                                                       *
 *********************************************************/
 
 
+// Librairie arduino de base
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 #include <Wire.h>
@@ -15,31 +16,35 @@
 #include <LoRa.h>
 
 
+// Librairie faite par nous-même pour utiliser les capteurs de la carte serveur
 #include <ds1307.h>
 #include <si7034.h>
 #include <webui.h>
 #include <index.h>
 
+// Déclaration des macros 
 #define LORA_FREQUENCY 868000000
 
-
-const char* ssid = "Livebox-3700"; // MODIFER !!
-const char* password =  "AkqDmWVXX6vL2AxNxg"; // MODIFIER !!
+// Déclaration des constante
+const char* ssid = ""; // MODIFER !!
+const char* password =  ""; // MODIFIER !!
 const char* ntpServer = "time.google.com";
 
 const int rs = 15, en = 2, d4 = 0, d5 = 4, d6 = 16, d7 = 17; 
 
-
+// Déclaration des objets des classes
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
 DS1307 clk;
 SI7034 sensor;
 WEBUI webUI;
 
-
+// Déclaration des variables
 float inTemperature = 0, inHumidity = 0, outTemperature = 10, outHumidity = 90;
 long outPressure = 1012;
 struct MyTime myTime;
 
+// Déclaration des fonctions
 void displayTimeDate(struct MyTime *time);
 void displayTemp(float temp);
 void displayRH(float rh);
@@ -47,12 +52,13 @@ void loraGetData();
 
 
 void setup() {
+  // Initialisation des différents composants
   lcd.begin(20, 4);
   clk.begin();
   sensor.begin();
   Serial.begin(9600);
 
-
+  // Initialisation et configuration du wifi
   WiFi.mode(WIFI_STA); 
   WiFi.begin(ssid, password);
   while(WiFi.waitForConnectResult() != WL_CONNECTED){      
@@ -64,16 +70,19 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());  
 
+  // Initialisation de l'interface web
   webUI.begin();
 
-  configTime(0, 3600, ntpServer);
+  configTime(0, 3600, ntpServer); // configuration du temps réel sur l'esp
+                                  // depuis le serveur ntp
 
-
+  // initialisation et configuration de Lora
   if (!LoRa.begin(LORA_FREQUENCY)) {
     Serial.println("Starting LoRa failed!");
     while (1);
   }
 
+  // Obtention du temps réel et configuration dans le DS1307
   struct tm rtm;
 
   if(getLocalTime(&rtm)){
@@ -84,18 +93,20 @@ void setup() {
 }
 
 void loop() {
+  // Mesure des différentes données
   inTemperature = sensor.getTemp();
   inHumidity = sensor.getRH();
   clk.getRealTime(&myTime);
 
-  displayTimeDate(&myTime);    
-  Serial.println(myTime.day);
+  // Réception des données de la carte capteur
+  loraGetData();
 
+  // Affichage des différentes données sur l'écran
+  displayTimeDate(&myTime);    
   displayTemp(inTemperature);
   displayRH(inHumidity);
 
-  loraGetData();
-
+  // Affichage des différentes données sur l'interface web
   webUI.setValue(&inTemperature, &inHumidity, &outTemperature, &outHumidity, &outPressure, &myTime);
   webUI.displayValue();
 
@@ -103,6 +114,7 @@ void loop() {
   lcd.clear();
 }
 
+// Fonction permettant l'affichage du temps réel sur l'écran
 void displayTimeDate(struct MyTime *time){
   lcd.setCursor(0, 0);
   lcd.print(time -> hours);
@@ -129,6 +141,7 @@ void displayTimeDate(struct MyTime *time){
   lcd.print(time -> year);
 }
 
+// Fonction permettant l'affichage de la température sur l'écran
 void displayTemp(float temp){
   lcd.setCursor(0, 2);
   lcd.print(temp);
@@ -136,6 +149,7 @@ void displayTemp(float temp){
   lcd.print("C");
 }
 
+// Fonction permettant l'affichage de l'humidité sur l'écran
 void displayRH(float rh){
   lcd.setCursor(0, 3);
   lcd.print(rh);
@@ -143,8 +157,11 @@ void displayRH(float rh){
   lcd.print("%");
 }
 
+// Fonction permettant la réception des données de la carte capteur
 void loraGetData(){
   int packetSize = LoRa.parsePacket();
+
+  // Si des paquets sont à lire alors on les lis
   if (packetSize) {
     while (LoRa.available()) {
       outTemperature = LoRa.read();
