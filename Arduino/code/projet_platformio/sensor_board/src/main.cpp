@@ -12,6 +12,7 @@
 #include <LiquidCrystal.h>
 #include <Wire.h>
 #include <LoRa.h>
+#include <SPI.h>
 
 // Librairie faite par nous-même pour utiliser les capteurs de la carte serveur
 #include <sht21.h>
@@ -19,13 +20,17 @@
 
 // Déclaration des macros 
 #define POWER_LEVEL 1
-#define LORA_FREQUENCY 868000000
+//#define LORA_FREQUENCY 868E6
 
-// Déclaration des constante
-const int rs = 2, en = 3, d4 = 4, d5 = 5, d6 = 6, d7 = 7;
+#define RS 2
+#define EN 3
+#define D4 4
+#define D5 5
+#define D6 6
+#define D7 7
 
 // Déclaration des objets des classes
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 
 BMP180 bmp;
 SHT21 sht;
@@ -37,7 +42,7 @@ float pressure, tmp, temp, rh;
 void displayTemp(float temp);
 void displayRh(float rh);
 void displayPressure(float press);
-void loraSendData(float temp, float rh, long press);
+//void loraSendData(float temp, float rh, long press);
 float getPowerLevel();
 
 
@@ -49,11 +54,25 @@ void setup() {
   Serial.begin(9600);
 
   // initialisation et configuration de Lora
-  if (!LoRa.begin(LORA_FREQUENCY)) {
-    Serial.println("Starting LoRa failed!");
-    while (1);
-  }
+  /*SPI.begin();
+  LoRa.setPins();
 
+  unsigned int myDelay = millis();
+
+  int ret = 0;
+  while ((myDelay + 10000) > millis()){
+    ret = LoRa.begin(LORA_FREQUENCY);
+
+    if (ret){
+      Serial.println("Starting LoRa success!");
+      LoRa.setSyncWord(0xa2);
+      break;
+    }
+  }
+  
+  if (!ret){
+    Serial.println("Starting LoRa failed!");
+  }*/
 }
 
 void loop() {
@@ -67,10 +86,17 @@ void loop() {
   displayRh(rh);
   displayPressure(pressure);
 
-  // Emission des données sur la carte serveur
-  loraSendData(temp, rh, pressure);
+  delay(3000);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print(getPowerLevel());
+  lcd.setCursor(5, 0);
+  lcd.print("V");
 
-  delay(500);
+  // Emission des données sur la carte serveur
+  //loraSendData(temp, rh, pressure);
+
+  delay(3000);
   lcd.clear();
 }
 
@@ -105,13 +131,13 @@ float getPowerLevel()
 }
 
 // Fonction permettant l'émssion des données vers la carte serveur
-void loraSendData(float temp, float rh, long press)
+/*void loraSendData(float temp, float rh, long press)
 {
   LoRa.beginPacket();
   LoRa.print(temp);
   LoRa.print(rh);
   LoRa.print(press);
   LoRa.endPacket();
-}
+}*/
 
 

@@ -83,7 +83,7 @@ const char MAIN_page[] PROGMEM = R"=====(
     </head>
     <body>
         <div class="title">
-            <h1>Welcom on the weather station !</h1>
+            <h1>Welcome on the weather station !</h1>
         </div>
         <div class="content">
             <div class="typeData">

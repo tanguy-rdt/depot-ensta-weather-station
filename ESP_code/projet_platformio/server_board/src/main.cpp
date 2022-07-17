@@ -23,17 +23,30 @@
 #include <index.h>
 
 // Déclaration des macros 
-#define LORA_FREQUENCY 868000000
+/*#define LORA_FREQUENCY 868E6
+
+#define RESET 14
+#define DIO0 26
+#define SS 18
+#define SCK 5
+#define MISO 19
+#define MOSI 27*/
+
+#define RS 15
+#define EN 2
+#define D4 0
+#define D5 4
+#define D6 16
+#define D7 17
+
 
 // Déclaration des constante
 const char* ssid = ""; // MODIFER !!
 const char* password =  ""; // MODIFIER !!
 const char* ntpServer = "time.google.com";
 
-const int rs = 15, en = 2, d4 = 0, d5 = 4, d6 = 16, d7 = 17; 
-
 // Déclaration des objets des classes
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 
 DS1307 clk;
 SI7034 sensor;
@@ -48,7 +61,7 @@ struct MyTime myTime;
 void displayTimeDate(struct MyTime *time);
 void displayTemp(float temp);
 void displayRH(float rh);
-void loraGetData();
+//void loraGetData();
 
 
 void setup() {
@@ -76,13 +89,7 @@ void setup() {
   configTime(0, 3600, ntpServer); // configuration du temps réel sur l'esp
                                   // depuis le serveur ntp
 
-  // initialisation et configuration de Lora
-  if (!LoRa.begin(LORA_FREQUENCY)) {
-    Serial.println("Starting LoRa failed!");
-    while (1);
-  }
-
-  // Obtention du temps réel et configuration dans le DS1307
+                                    // Obtention du temps réel et configuration dans le DS1307
   struct tm rtm;
 
   if(getLocalTime(&rtm)){
@@ -90,6 +97,27 @@ void setup() {
     Serial.println(rtm.tm_hour);
 
   }
+
+  // initialisation et configuration de Lora
+  /*SPI.begin(SCK, MISO, MOSI, SS);
+  LoRa.setPins(SS, RESET, DIO0);    
+
+  int myDelay = millis();
+
+  int ret = 0;
+  while ((myDelay + 10000) > millis()){
+    ret = LoRa.begin(LORA_FREQUENCY);
+
+    if (ret){
+      Serial.println("Starting LoRa success!");
+      LoRa.setSyncWord(0xa2);
+      break;
+    }
+  }
+  
+  if (!ret){
+    Serial.println("Starting LoRa failed!");
+  }*/
 }
 
 void loop() {
@@ -99,7 +127,7 @@ void loop() {
   clk.getRealTime(&myTime);
 
   // Réception des données de la carte capteur
-  loraGetData();
+  //loraGetData();
 
   // Affichage des différentes données sur l'écran
   displayTimeDate(&myTime);    
@@ -158,7 +186,7 @@ void displayRH(float rh){
 }
 
 // Fonction permettant la réception des données de la carte capteur
-void loraGetData(){
+/*void loraGetData(){
   int packetSize = LoRa.parsePacket();
 
   // Si des paquets sont à lire alors on les lis
@@ -169,5 +197,5 @@ void loraGetData(){
       outPressure = LoRa.read();
     }
   }
-}
+}*/
 
