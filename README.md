@@ -1,3 +1,4 @@
+*This repository contains a project of SA2 for the realization of a weather station during my engineering school* \
 *Converted from tex file, pdf in the repository*
 
 # Rapport de projet - *Station météo*
