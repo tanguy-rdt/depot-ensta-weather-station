@@ -1,11 +1,8 @@
-<<<<<<< HEAD
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
  
 ---
 
-=======
 *This repository contains a project of SA2 for the realization of a weather station during my engineering school* \
->>>>>>> 8b58d1c576cd43cce88ae874201394063e20280c
 *Converted from tex file, pdf in the repository*
 
 # Rapport de projet - *Station météo*
